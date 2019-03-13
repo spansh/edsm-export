@@ -4,6 +4,7 @@ use strict;
 use DBI;
 use DBD::mysql;
 use JSON::XS;
+use Getopt::Long;
 
 my %material_mapping = (
     1       => 'Antimony',
@@ -169,6 +170,11 @@ my %planet_mapping = (
         82      => 'Helium gas giant',
 );
 
+Getopt::Long::GetOptions(
+	"batch_size=i" => \(my $batch_size),
+	"limit=i" => \(my $limit),
+);
+
 
 my $dbh = DBI->connect("DBI:mysql:database=edsm;host=localhost",'elite_dangerous','5u0r36n4d_3t71le');
 
@@ -227,7 +233,9 @@ my $current_body_id = 0;
 
 print "[\n";
 
+my $cuont = 0;
 while ($current_body_id < $max_body_id) {
+	$count++;
     $body_sth->execute($current_body_id,$max_body_id);
     while (my $body_row = $body_sth->fetchrow_hashref()) {
         my %materials;
@@ -288,6 +296,9 @@ while ($current_body_id < $max_body_id) {
             solidComposition => \%solids,
             atmosphereComposition => \%solids,
         });
+    }
+    if ($limit > 0 && $count > $limit) {
+        last;
     }
 }
 
