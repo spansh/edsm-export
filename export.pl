@@ -233,7 +233,7 @@ my $current_body_id = 0;
 
 print "[\n";
 
-my $cuont = 0;
+my $count = 0;
 while ($current_body_id < $max_body_id) {
 	$count++;
     $body_sth->execute($current_body_id,$max_body_id);
